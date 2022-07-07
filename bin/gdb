@@ -1,0 +1,8 @@
+source $(dirname $0)/include/constants.sh
+
+arm-none-eabi-gdb \
+  -ex="target remote | openocd -f interface/stlink.cfg -f $TARGET_CONFIG -f bin/include/gdb-pipe.cfg" \
+  --ex="monitor halt" \
+  --ex="monitor gdb_sync" \
+  --ex="file build/$PROGNAME.elf" \
+  --ex="stepi"

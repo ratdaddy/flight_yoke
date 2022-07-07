@@ -1,0 +1,9 @@
+.mxproject
+Drivers
+Middlewares
+build
+**/*.log
+*.swp
+tmp
+.DS_Store
+.ruby-version
