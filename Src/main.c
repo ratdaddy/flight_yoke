@@ -23,6 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "usbd_hid.h"
 
 /* USER CODE END Includes */
 
@@ -93,10 +94,27 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  typedef struct {
+    uint8_t buttons;
+    uint8_t x_move;
+    uint8_t y_move;
+    uint8_t scroll_wheel;
+  } mouseHID;
+
+  extern USBD_HandleTypeDef hUsbDeviceFS;
+
+  static mouseHID mousehid = { 0, 0, 10, 0 };
+
   while (1)
   {
+    HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
+    HAL_Delay(1000);
+    USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&mousehid, sizeof (mousehid));
+
+    HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
+    HAL_Delay(1000);
+
     /* USER CODE END WHILE */
-    HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_SET);
 
     /* USER CODE BEGIN 3 */
   }
