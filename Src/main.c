@@ -95,21 +95,22 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   typedef struct {
-    uint8_t buttons;
-    uint8_t x_move;
-    uint8_t y_move;
-    uint8_t scroll_wheel;
+    int8_t x_value;
+    int8_t y_move;
+    uint16_t buttons;
   } mouseHID;
 
   extern USBD_HandleTypeDef hUsbDeviceFS;
 
-  static mouseHID mousehid = { 0, 0, 10, 0 };
+  static mouseHID mousehid = { 0, 0, 0 };
 
   while (1)
   {
-    HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_SET);
     HAL_Delay(1000);
     USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&mousehid, sizeof (mousehid));
+
+    mousehid.x_value += 1;
 
     HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
     HAL_Delay(1000);
