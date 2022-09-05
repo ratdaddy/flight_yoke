@@ -423,7 +423,7 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   typedef struct {
     int8_t x_value;
-    int8_t y_move;
+    int8_t y_value;
     uint16_t buttons;
   } mouseHID;
 
@@ -431,30 +431,26 @@ void StartDefaultTask(void const * argument)
 
   static mouseHID mousehid = { 0, 0, 0 };
 
-  USBD_HID_HandleTypeDef *hhid = (USBD_HID_HandleTypeDef *)hUsbDeviceFS.pClassData;
-  uint32_t timer;
+  uint32_t polling_interval = USBD_HID_GetPollingInterval(&hUsbDeviceFS);
+  printf("HID polling interval: %ld\n", polling_interval);
+
+  extern int8_t x_value, y_value;
+  static int8_t last_x_value, last_y_value = 0;
 
   for(;;)
   {
-    HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_SET);
+    if (x_value != last_x_value || y_value != last_y_value) {
+      last_x_value = mousehid.x_value = x_value;
+      last_y_value = mousehid.y_value = y_value;
 
-    timer = __HAL_TIM_GET_COUNTER(&htim2);
-    osDelay(1000);
-    printf("a 1 sec delay takes %ld uSec\n", __HAL_TIM_GET_COUNTER(&htim2) - timer);
-    printf("HID polling interval: %ld\n", USBD_HID_GetPollingInterval(&hUsbDeviceFS));
-    printf("about to send to USB\n");
+      HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
+      USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&mousehid, sizeof (mousehid));
 
-    USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&mousehid, sizeof (mousehid));
+      osDelay(polling_interval);
+      HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_SET);
+    }
 
-    /*
-    while (hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED && hhid->state != HID_IDLE)
-      ;
-      */
-
-    mousehid.x_value += 1;
-
-    HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
-    osDelay(1000);
+    osDelay(1);
   }
   /* USER CODE END 5 */
 }
