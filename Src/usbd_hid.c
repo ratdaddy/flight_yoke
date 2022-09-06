@@ -326,15 +326,13 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE] __
        0x95, 0x02, // Report Count (2) -> 2x = 2 bytes -> no bit stuffing
        0x81, 0x02, // Input (Data,Var,Abs,...)
        0x05, 0x09, // Usage Page (Button)
-       0x09, 0x01, // Usage Button1
+       0x19, 0x01, //     USAGE_MINIMUM (Button 1)
+       0x29, 0x10, //     USAGE_MAXIMUM (Button 16)
        0x15, 0x00, // Logical Minimum (0)
        0x25, 0x01, // Logical Maximum (1)
        0x75, 0x01, // Report Size (1) -> 1 bit
-       0x95, 0x0f, // Report Count (15) -> 15 values : need to stuff 1 more bit
+       0x95, 0x10, // Report Count (16) -> 16 values
        0x81, 0x02, // Input (Data,Var,Abs...)
-       0x75, 0x01, // Report Size (1) -> 7 bit
-       0x95, 0x01, // Report Count (1) -> 1 value  7 bits for byte alignment
-       0x81, 0x03, // Input (Const,Var,Abs,,,,,)
       0xC0, // end collection Logical
 
    0xC0, // End Collection =>  46 bytes

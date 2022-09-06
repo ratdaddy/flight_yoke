@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 #include "usbd_hid.h"
 #include "write.h"
+#include "buttons.h"
 
 /* USER CODE END Includes */
 
@@ -391,6 +392,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
@@ -401,6 +403,24 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(BLUE_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : RIGHT6_Pin RIGHT5_Pin RIGHT4_Pin RIGHT3_Pin
+                           HAT5_Pin LEFT1_Pin */
+  GPIO_InitStruct.Pin = RIGHT6_Pin|RIGHT5_Pin|RIGHT4_Pin|RIGHT3_Pin
+                          |HAT5_Pin|LEFT1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : RIGHT2_Pin RIGHT1_Pin HAT1_Pin HAT2_Pin
+                           HAT3_Pin HAT4_Pin LEFT2_Pin LEFT3_Pin
+                           LEFT4_Pin LEFT5_Pin */
+  GPIO_InitStruct.Pin = RIGHT2_Pin|RIGHT1_Pin|HAT1_Pin|HAT2_Pin
+                          |HAT3_Pin|HAT4_Pin|LEFT2_Pin|LEFT3_Pin
+                          |LEFT4_Pin|LEFT5_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
@@ -425,26 +445,37 @@ void StartDefaultTask(void const * argument)
     int8_t x_value;
     int8_t y_value;
     uint16_t buttons;
-  } mouseHID;
+  } joystickHID;
 
   extern USBD_HandleTypeDef hUsbDeviceFS;
 
-  static mouseHID mousehid = { 0, 0, 0 };
+  static joystickHID joystick_hid = { 0, 0, 0 };
 
   uint32_t polling_interval = USBD_HID_GetPollingInterval(&hUsbDeviceFS);
   printf("HID polling interval: %ld\n", polling_interval);
 
   extern int8_t x_value, y_value;
   static int8_t last_x_value, last_y_value = 0;
+  static uint16_t button_state;
+  static uint16_t last_button_state = 0;
 
   for(;;)
   {
-    if (x_value != last_x_value || y_value != last_y_value) {
-      last_x_value = mousehid.x_value = x_value;
-      last_y_value = mousehid.y_value = y_value;
+    button_state = read_buttons();
+
+    if (x_value != last_x_value || y_value != last_y_value || button_state != last_button_state) {
+      /*
+      if (button_state != last_button_state) {
+        printf("new button state: 0x%04x\n", button_state);
+      }
+      */
+
+      last_x_value = joystick_hid.x_value = x_value;
+      last_y_value = joystick_hid.y_value = y_value;
+      last_button_state = joystick_hid.buttons = button_state;
 
       HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
-      USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&mousehid, sizeof (mousehid));
+      USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&joystick_hid, sizeof (joystick_hid));
 
       osDelay(polling_interval);
       HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_SET);

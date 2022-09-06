@@ -60,6 +60,38 @@ extern TIM_HandleTypeDef htim2;
 /* Private defines -----------------------------------------------------------*/
 #define BLUE_LED_Pin GPIO_PIN_13
 #define BLUE_LED_GPIO_Port GPIOC
+#define RIGHT6_Pin GPIO_PIN_4
+#define RIGHT6_GPIO_Port GPIOA
+#define RIGHT5_Pin GPIO_PIN_5
+#define RIGHT5_GPIO_Port GPIOA
+#define RIGHT4_Pin GPIO_PIN_6
+#define RIGHT4_GPIO_Port GPIOA
+#define RIGHT3_Pin GPIO_PIN_7
+#define RIGHT3_GPIO_Port GPIOA
+#define RIGHT2_Pin GPIO_PIN_0
+#define RIGHT2_GPIO_Port GPIOB
+#define RIGHT1_Pin GPIO_PIN_1
+#define RIGHT1_GPIO_Port GPIOB
+#define HAT1_Pin GPIO_PIN_12
+#define HAT1_GPIO_Port GPIOB
+#define HAT2_Pin GPIO_PIN_13
+#define HAT2_GPIO_Port GPIOB
+#define HAT3_Pin GPIO_PIN_14
+#define HAT3_GPIO_Port GPIOB
+#define HAT4_Pin GPIO_PIN_15
+#define HAT4_GPIO_Port GPIOB
+#define HAT5_Pin GPIO_PIN_8
+#define HAT5_GPIO_Port GPIOA
+#define LEFT1_Pin GPIO_PIN_15
+#define LEFT1_GPIO_Port GPIOA
+#define LEFT2_Pin GPIO_PIN_3
+#define LEFT2_GPIO_Port GPIOB
+#define LEFT3_Pin GPIO_PIN_4
+#define LEFT3_GPIO_Port GPIOB
+#define LEFT4_Pin GPIO_PIN_5
+#define LEFT4_GPIO_Port GPIOB
+#define LEFT5_Pin GPIO_PIN_6
+#define LEFT5_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
